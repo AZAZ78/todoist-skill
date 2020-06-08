@@ -1,0 +1,11 @@
+name: Todoist
+skillMetadata:
+  sections:
+    - name: API Token
+      fields:
+        - type: label
+          label: Todoist API token.  This is found on the Settings->Integrations page of Todoist.
+        - name: token
+          type: text
+          label: API token
+          value: ""
