@@ -6,7 +6,6 @@ import requests
 import json
 from mycroft import MycroftSkill, intent_file_handler
 from mycroft.util.log import LOG
-from pprint import pprint
 
 class Todoist(MycroftSkill):
     def __init__(self):
