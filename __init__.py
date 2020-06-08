@@ -55,7 +55,7 @@ class Todoist(MycroftSkill):
             self.speak_dialog('There was an error calling the todoist A P I.  '+resp.text)
             return;
           LOG.debug("POST JsonResponseCode: "+str(resp.status_code))
-          self.speak_dialog('Added '+item+' to list '+listname)
+          self.speak_dialog("todoist" , data={"item" : item, "listname" : listname})
 
     def initialize(self):
         LOG.debug("Todoist: initialize.")

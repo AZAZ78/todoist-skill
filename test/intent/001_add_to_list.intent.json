@@ -1,0 +1,5 @@
+{
+  "utterance": "add sugar to list safeway",
+  "intent_type": "todoist.intent",
+  "expected_dialog": "todoist.dialog"
+}
