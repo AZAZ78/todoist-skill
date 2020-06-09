@@ -15,7 +15,7 @@ class Todoist(MycroftSkill):
     @intent_file_handler('todoist.intent')
     def handle_todoist(self, message):
         # Get API token
-        token = self.settings.get('token')
+        token = self.settings.get('token',"")
         if token == "":
           self.speak_dialog('No A P I token provided in the configuration.')
           return;
