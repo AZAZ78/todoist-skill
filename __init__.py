@@ -17,7 +17,7 @@ class Todoist(MycroftSkill):
         # Get API token
         token = self.settings.get('token',"")
         if token == "":
-          self.speak_dialog('No A P I token provided in the configuration.')
+          self.speak_dialog("error" , data={"message" : 'No A P I token provided in the configuration.'})
           return;
 
         # Get item and list name
@@ -25,7 +25,7 @@ class Todoist(MycroftSkill):
         if "listname" in message.data:
           listname = message.data["listname"]
         else:
-          self.speak_dialog('No list name specified')
+          self.speak_dialog("error" , data={"message" : 'No list name specified.'})
           return
 
         LOG.debug("Todoist: token: "+token)
