@@ -5,6 +5,7 @@
 import requests
 import json
 from mycroft import MycroftSkill, intent_file_handler
+from mycroft.messagebus.message import Message
 from mycroft.util.log import LOG
 
 class Todoist(MycroftSkill):
@@ -21,13 +22,16 @@ class Todoist(MycroftSkill):
           return;
 
         # Get item and list name
-        item = message.data["item"]
+        item = message.data["item"].capitalize()
         if "listname" in message.data:
-          listname = message.data["listname"]
+          listname = message.data["listname"].capitalize()
         else:
           self.speak_dialog("error" , data={"message" : 'No list name specified.'})
           return
 
+        self.gui["listName"] = listname
+        self.gui["itemToAdd"] = item
+        self.gui.show_page("display.qml")
         LOG.debug("Todoist: token: "+token)
         LOG.debug("Todoist: item: "+item)
         LOG.debug("Todoist: list: "+listname)
