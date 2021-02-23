@@ -11,7 +11,7 @@ Interaces with the todoist application to add items to project lists.  this was 
 * "Add flowers to list home depot"
 
 ## Credits
-John R Graves
+John R Graves, Alexander Zeh (azaz78)
 
 ## Category
 **Productivity**

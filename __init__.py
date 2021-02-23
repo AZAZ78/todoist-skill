@@ -25,7 +25,7 @@ class Todoist(MycroftSkill):
         # Get API token
         self.token = self.settings.get('token',"")
         if not self.token:
-          self.speak('No A P I token provided in the configuration.')
+          self.speak_dialog('todoist.error.configuration')
           return
         self.api = todoist.TodoistAPI(self.token)
         self.api.sync()
@@ -36,22 +36,38 @@ class Todoist(MycroftSkill):
     def handle_todoist(self, message):
         self.log.debug("handle_todoist")
         if not self.api:
-          self.speak('Todoist A P I not initialized.')
+          self.speak_dialog('todoist.error.connect')
           return
-        self.api.sync()
         # Get item and list name
         item = message.data["item"].capitalize()
         if "listname" in message.data:
-          listname = message.data["listname"].capitalize()
+          listname = message.data["listname"]
         else:
-          self.speak('No list name specified.')
+          self.speak_dialog('todoist.error.list_not_specified')
           return
-
+        
         self.gui["listName"] = listname
         self.gui["itemToAdd"] = item
         self.gui.show_page("display.qml")
-        self.log.debug("item: {}".format(item))
-        self.log.debug("list: {}".format(listname))
+        self.log.debug("item: {}, list: {}".format(item, listname))
+        
+        self.api.sync()
+        projects = self.api.state['projects']
+        id = None
+        for proj in projects:
+            if proj['name'].lower() == listname:
+                id = proj['id']
+        if id is None:
+            self.log.info("list not found")
+            self.speak_dialog('todoist.error.list_not_found', data={"listname": listname})
+            return
+        
+        new_item = self.api.items.add(item)
+        self.api.commit()
+        new_item.move(project_id=id)
+        self.api.commit()
+        
+        self.speak_dialog('todoist.success', data={"item": item, "listname": listname})
 
 def create_skill():
     return Todoist()

@@ -1,1 +1,2 @@
-(setze|ergänze)( bitte|) {item} auf( meiner|) (todo|)liste {listname}
+setze( bitte|) {item} auf( die| meine|) (todo|)liste {listname}
+ergänze( bitte|) {item} auf( der| meiner|) (todo|)liste {listname}
