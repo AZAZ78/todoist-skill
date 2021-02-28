@@ -32,14 +32,71 @@ class Todoist(MycroftSkill):
         self.log.info("Initialized todoist api for {}".format(self.api.state['user']['full_name']))
         return
 
-    @intent_file_handler('todoist.intent')
-    def handle_todoist(self, message):
-        self.log.debug("handle_todoist")
+    @intent_file_handler('todoist.create.list.intent')
+    def handle_todoist_list(self, message):
+        self.log.debug("handle_todoist_item_list")
+        if not self.api:
+          self.speak_dialog('todoist.error.connect')
+          return
+
+        if "listname" in message.data:
+          listname = message.data["listname"]
+        else:
+          self.speak_dialog('todoist.error.list_not_specified')
+          return
+        self.log.debug("list: {}".format(listname))
+
+        self.api.sync()
+        self.api.projects.add(listname)
+        try:
+            self.api.commit()
+        except todoist.api.SyncError as err:
+            self.speak("Error during commit: {}".format(err.args[1]['error']))
+            return
+
+        self.speak_dialog('todoist.success.list', data={"listname": listname})
+
+    @intent_file_handler('todoist.create.item.intent')
+    def handle_todoist_item(self, message):
+        self.log.debug("handle_todoist_item_list")
         if not self.api:
           self.speak_dialog('todoist.error.connect')
           return
         # Get item and list name
-        item = message.data["item"].capitalize()
+        if "item" in message.data:
+          item = message.data["item"].capitalize()
+        else:
+          self.speak_dialog('todoist.error.item_not_specified')
+          return
+
+        self.gui["listName"] = 'None'
+        self.gui["itemToAdd"] = item
+        self.gui.show_page("display.qml")
+        self.log.debug("item: {}".format(item))
+        
+        self.api.sync()
+        new_item = self.api.items.add(item)
+        try:
+            self.api.commit()
+        except todoist.api.SyncError as err:
+            self.speak("Error during commit: {}".format(err.args[1]['error']))
+            return
+        
+        self.speak_dialog('todoist.success.item', data={"item": item})
+
+    @intent_file_handler('todoist.create.item.list.intent')
+    def handle_todoist_item_list(self, message):
+        self.log.debug("handle_todoist_item_list")
+        if not self.api:
+          self.speak_dialog('todoist.error.connect')
+          return
+        # Get item and list name
+        if "item" in message.data:
+          item = message.data["item"].capitalize()
+        else:
+          self.speak_dialog('todoist.error.item_not_specified')
+          return
+
         if "listname" in message.data:
           listname = message.data["listname"]
         else:
@@ -62,12 +119,14 @@ class Todoist(MycroftSkill):
             self.speak_dialog('todoist.error.list_not_found', data={"listname": listname})
             return
         
-        new_item = self.api.items.add(item)
-        self.api.commit()
-        new_item.move(project_id=id)
-        self.api.commit()
+        new_item = self.api.items.add(item, project_id=id)
+        try:
+            self.api.commit()
+        except todoist.api.SyncError as err:
+            self.speak("Error during commit: {}".format(err.args[1]['error']))
+            return
         
-        self.speak_dialog('todoist.success', data={"item": item, "listname": listname})
+        self.speak_dialog('todoist.success.item.list', data={"item": item, "listname": listname})
 
 def create_skill():
     return Todoist()
